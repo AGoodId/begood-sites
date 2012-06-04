@@ -3,7 +3,7 @@ from django.contrib.sites.models import Site
 from django.core.cache import cache
 
 
-from begood.contrib.sites.utils import make_tls_property
+from utils import make_tls_property
 
 
 _default_site_id = getattr(settings, 'SITE_ID', None)
