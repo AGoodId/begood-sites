@@ -17,3 +17,11 @@ class SingleSiteField(models.ForeignKey):
   def __init__(self, **kwargs):
     super(SingleSiteField, self).__init__(Site, **kwargs)
 
+
+# Make sure South migrations work
+try:
+  from south.modelsinspector import add_introspection_rules
+  add_introspection_rules([], ["^begood_sites\.fields\.MultiSiteField"])
+  add_introspection_rules([], ["^begood_sites\.fields\.SingleSiteField"])
+except:
+  pass
