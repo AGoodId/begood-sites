@@ -1,0 +1,7 @@
+*.db
+*.pyc
+.DS_Store
+settings_dev.py
+uploads
+whoosh
+CACHE
