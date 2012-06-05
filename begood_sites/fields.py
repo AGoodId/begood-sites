@@ -9,12 +9,16 @@ class MultiSiteField(models.ManyToManyField):
         'blank': False,
         }
     defaults.update(kwargs)
+    if 'to' in defaults:
+      del defaults['to']
     super(MultiSiteField, self).__init__(Site, **defaults)
 
 
 class SingleSiteField(models.ForeignKey):
 
   def __init__(self, **kwargs):
+    if 'to' in kwargs:
+      del kwargs['to']
     super(SingleSiteField, self).__init__(Site, **kwargs)
 
 
