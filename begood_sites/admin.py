@@ -8,6 +8,14 @@ from fields import MultiSiteField
 
 class SiteModelAdmin(admin.ModelAdmin):
 
+  def get_site_queryset(self, obj, user):
+    queryset = user.get_sites()
+    if obj is not None:
+      # For existing objects, also add any sites that it's already published on
+      queryset = queryset | obj.sites.all()
+      queryset = queryset.distinct()
+    return queryset
+
   def queryset(self, request):
     """
     Returns a Site filtered queryset for use in the Django admin change list
@@ -29,11 +37,7 @@ class SiteModelAdmin(admin.ModelAdmin):
       try:
         # Add any sites the user has access to
         user = kwargs['request'].user
-        queryset = user.get_sites()
-        if self._object is not None:
-          # For existing objects, also add any sites that it's already published on
-          queryset = queryset | self._object.sites.all()
-          queryset = queryset.distinct()
+        queryset = self.get_site_queryset(self._object, user)
       except KeyError:
         queryset = Site.objects.all()
       current_site = Site.objects.get_current()
