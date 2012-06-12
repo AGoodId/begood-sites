@@ -40,7 +40,7 @@ def add_site_to_revision(sender, **kwargs):
   revision = kwargs['revision']
   versions = kwargs['versions']
   sites = []
-  import ipdb; ipdb.set_trace()
+
   if revision.versionsites.exists():
     # If the sites are already set earlier, don't reset them here
     return
