@@ -1,9 +1,11 @@
 from django import forms
+from django.conf import settings
 from django.contrib import admin
 from django.contrib.sites.models import Site
 from django.utils.translation import ugettext as _
 
 from fields import MultiSiteField
+from reversion.admin import VersionAdmin
 
 
 class SiteModelAdmin(admin.ModelAdmin):
@@ -50,4 +52,13 @@ class SiteModelAdmin(admin.ModelAdmin):
         widget=admin.widgets.FilteredSelectMultiple(_('sites'), False)
       )
     return super(SiteModelAdmin, self).formfield_for_dbfield(field, **kwargs)
+
+
+class SiteVersionAdmin(VersionAdmin):
+
+  def _order_version_queryset(self, queryset):
+    # Not the cleanest way to filter by site, but there was no better method to
+    # override
+    qs = super(SiteVersionAdmin, self)._order_version_queryset(queryset)
+    return qs.filter(revision__versionsites__site_id=settings.SITE_ID)
 
