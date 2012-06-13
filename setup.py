@@ -17,6 +17,7 @@ setup(
     license="MIT",
     packages=[
         "begood_sites",
+        "begood_sites.management.commands",
     ],
     long_description=read("README.markdown"),
     classifiers=[
