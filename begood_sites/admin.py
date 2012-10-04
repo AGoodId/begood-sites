@@ -40,7 +40,7 @@ class SiteModelAdmin(admin.ModelAdmin):
         # Add any sites the user has access to
         user = kwargs['request'].user
         queryset = self.get_site_queryset(self._object, user)
-      except KeyError:
+      except:
         queryset = Site.objects.all()
       current_site = Site.objects.get_current()
       required = not field.blank
