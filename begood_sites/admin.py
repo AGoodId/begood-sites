@@ -7,6 +7,11 @@ from django.utils.translation import ugettext as _
 from fields import MultiSiteField
 from reversion.admin import VersionAdmin
 
+try:
+  from begood.contrib.admin.widgets import DropDownSelectMultiple as DefaultSelectWidget
+except ImportError:
+  from django.contrib.adbmin.widgets import FilteredSelectMultiple as DefaultSelectWidget
+
 
 class SiteModelAdmin(admin.ModelAdmin):
 
@@ -44,12 +49,16 @@ class SiteModelAdmin(admin.ModelAdmin):
         queryset = Site.objects.all()
       current_site = Site.objects.get_current()
       required = not field.blank
+      if 'widget' in kwargs:
+        widget = kwargs['widget']
+      else:
+        widget = DefaultSelectWidget(_('sites'), False)
       return forms.ModelMultipleChoiceField(
         label=_('Sites'),
         queryset=queryset,
         initial={current_site.pk: 'selected'},
         required=required,
-        widget=admin.widgets.FilteredSelectMultiple(_('sites'), False)
+        widget=widget
       )
     return super(SiteModelAdmin, self).formfield_for_dbfield(field, **kwargs)
 
