@@ -10,7 +10,7 @@ from reversion.admin import VersionAdmin
 try:
   from begood.contrib.admin.widgets import DropDownSelectMultiple as DefaultSelectWidget
 except ImportError:
-  from django.contrib.adbmin.widgets import FilteredSelectMultiple as DefaultSelectWidget
+  from django.contrib.admin.widgets import FilteredSelectMultiple as DefaultSelectWidget
 
 
 class SiteModelAdmin(admin.ModelAdmin):
