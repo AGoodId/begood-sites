@@ -17,9 +17,12 @@ class Command(BaseCommand):
       site = Site.objects.get(id=int(id_or_name))
     except (Site.DoesNotExist, ValueError):
       try:
-        site = Site.objects.get(name=id_or_name)
+        site = Site.objects.get(domain=id_or_name)
       except Site.DoesNotExist:
-        raise CommandError('No such site: %s' % id_or_name)
+        try:
+          site = Site.objects.get(name=id_or_name)
+        except Site.DoesNotExist:
+          raise CommandError('No such site: %s' % id_or_name)
 
     print "%d %s %s" % (site.id, site.domain, site.name)
 
