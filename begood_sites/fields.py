@@ -54,7 +54,7 @@ def add_site_to_revision(sender, **kwargs):
     # Add any sites from the previous version, so we can see that it has
     # moved
     try:
-      available_versions = Version.objects.get_for_object(ver.object)
+      available_versions = reversion.get_for_object_reference(ver.content_type.model_class(), ver.object_id)
       prev_ver = available_versions.exclude(id=ver.id).order_by('-id')[0]
       if 'sites' in prev_ver.field_dict:
         sites.extend([int(s) for s in prev_ver.field_dict['sites']])
