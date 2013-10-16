@@ -2,8 +2,10 @@ from django import forms
 from django.conf import settings
 from django.contrib import admin
 from django.contrib.sites.models import Site
+from django.contrib.sites.admin import SiteAdmin
 from django.utils.translation import ugettext as _
 
+from models import SiteSettings
 from fields import MultiSiteField
 from reversion.admin import VersionAdmin
 
@@ -71,3 +73,25 @@ class SiteVersionAdmin(VersionAdmin):
     qs = super(SiteVersionAdmin, self)._order_version_queryset(queryset)
     return qs.filter(revision__versionsites__site_id=settings.SITE_ID)
 
+
+class SiteSettingsInlineAdmin(admin.StackedInline):
+  """
+  Inline Admin class for site settings
+  """
+  model = SiteSettings
+  verbose_name = _('site settings')
+  verbose_name_plural = _('site settings')
+  can_delete = False
+
+
+class BeGoodSiteAdmin(SiteAdmin):
+  """
+  An admin class for the Site model with inline Site Settings
+  """
+  inlines = [SiteSettingsInlineAdmin]
+
+
+# unregister default site admin
+admin.site.unregister(Site)
+# register new site admin
+admin.site.register(Site, BeGoodSiteAdmin)
