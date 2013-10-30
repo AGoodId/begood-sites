@@ -8,6 +8,7 @@ from django.utils.translation import ugettext as _
 
 
 from reversion.models import Revision
+from begood.models import Template
 
 
 from fields import *
@@ -30,6 +31,10 @@ class VersionSite(models.Model):
 class SiteSettings(models.Model):
   site = models.OneToOneField(Site, primary_key=True, related_name="settings")
   extra_html_head = models.TextField(_('Extra HTML-head'), blank=True)
+  template_search = models.ForeignKey(Template, verbose_name=_("search template"),
+      blank=True, null=True, related_name='+')
+  template_404 = models.ForeignKey(Template, verbose_name=_("404 template"),
+      blank=True, null=True, related_name='+')
 
   class Meta:
     verbose_name = _('site settings')
