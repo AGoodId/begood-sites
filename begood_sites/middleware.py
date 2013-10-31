@@ -7,7 +7,9 @@ from utils import make_tls_property
 
 
 _default_site_id = getattr(settings, 'SITE_ID', None)
+_default_language_code = getattr(settings, 'LANGUAGE_CODE', None)
 SITE_ID = settings.__class__.SITE_ID = make_tls_property()
+LANGUAGE_CODE = settings.__class__.LANGUAGE_CODE = make_tls_property()
 
 
 def generate_cache_key(domain):
@@ -23,20 +25,20 @@ class DomainMiddleware(object):
       domain = domain.split(':')[0]
     # Domains are case insensitive
     domain = domain.lower()
+
     # Check the cache
     cache_key = generate_cache_key(domain)
-    site_id = cache.get(cache_key)
-    if site_id:
-      SITE_ID.value = site_id
-    else:
+    site = cache.get(cache_key)
+    if not site:
       # Cache was empty. Get the site from the DB
       try:
-        site = Site.objects.get(domain=domain)
+        site = Site.objects.select_related('settings').get(domain=domain)
       except Site.DoesNotExist:
-        site_id = _default_site_id
+        site = Site.objects.select_related('settings').get(id=_default_site_id)
       else:
-        site_id = site.pk
-        cache.set(cache_key, site_id, 5*60)
-    # Set SITE_ID for this thread/request
-    SITE_ID.value = site_id
+        cache.set(cache_key, site, 5*60)
+
+    # Set SITE_ID and LANGUAGE_CODE for this thread/request
+    SITE_ID.value = site.id
+    LANGUAGE_CODE.value = site.settings.language_code
     

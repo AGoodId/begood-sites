@@ -1,6 +1,7 @@
 from django.db import models
 from django.db.models.signals import pre_save, pre_delete
 from django.dispatch import receiver
+from django.conf import settings
 from django.core.cache import cache
 from django.contrib.sites.managers import CurrentSiteManager
 from django.contrib.sites.models import Site
@@ -35,6 +36,8 @@ class SiteSettings(models.Model):
       blank=True, null=True, related_name='+')
   template_404 = models.ForeignKey(Template, verbose_name=_("404 template"),
       blank=True, null=True, related_name='+')
+  language_code = models.CharField(_('language'), max_length=10,
+      choices=settings.LANGUAGES, default=settings.LANGUAGE_CODE)
 
   class Meta:
     verbose_name = _('site settings')
