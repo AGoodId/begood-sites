@@ -10,6 +10,8 @@ _default_site_id = getattr(settings, 'SITE_ID', None)
 _default_language_code = getattr(settings, 'LANGUAGE_CODE', None)
 SITE_ID = settings.__class__.SITE_ID = make_tls_property()
 LANGUAGE_CODE = settings.__class__.LANGUAGE_CODE = make_tls_property()
+SITE_ID.value = _default_site_id
+LANGUAGE_CODE.value = _default_language_code
 
 
 def generate_cache_key(domain):
@@ -40,5 +42,5 @@ class DomainMiddleware(object):
 
     # Set SITE_ID and LANGUAGE_CODE for this thread/request
     SITE_ID.value = site.id
-    LANGUAGE_CODE.value = site.settings.language_code
+    LANGUAGE_CODE.value = site.settings.language_code or _default_language_code
     
