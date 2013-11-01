@@ -1,6 +1,7 @@
 from django.db import models
 from django.db.models.signals import pre_save, pre_delete
 from django.dispatch import receiver
+from django.conf import settings
 from django.core.cache import cache
 from django.contrib.sites.managers import CurrentSiteManager
 from django.contrib.sites.models import Site
@@ -35,7 +36,8 @@ class SiteSettings(models.Model):
       blank=True, null=True, related_name='+')
   template_404 = models.ForeignKey(Template, verbose_name=_("404 template"),
       blank=True, null=True, related_name='+')
-  language_code = models.CharField(_('language'), max_length=10)
+  language_code = models.CharField(_('language'), max_length=10,
+      choices=settings.LANGUAGES, default='sv')
 
   class Meta:
     verbose_name = _('site settings')
@@ -45,9 +47,14 @@ class SiteSettings(models.Model):
     return _('Settings for') + ' ' + self.site.name
 
 
+def get_cache_key(site_id):
+  class_hash = hash(unicode(dir(SiteSettings)))
+  return 'sitesettings:%d:%d' % (class_hash, site_id)
+
+
 def get_settings_property(site):
   if site and site.id:
-    cache_key = 'sitesettings:%d' % site.id
+    cache_key = get_cache_key(site.id)
     settings = cache.get(cache_key)
     if settings is None:
       settings = SiteSettings.objects.get_or_create(site=site)[0]
@@ -62,7 +69,7 @@ Site.settings = property(get_settings_property)
 def clear_site_settings_cache_on_site_settings_updated(sender, **kwargs):
   instance = kwargs['instance']
   try:
-    cache_key = 'sitesettings:%d' % instance.site_id
+    cache_key = get_cache_key(instance.site_id)
     cache.delete(cache_key)
   except:
     pass
@@ -72,7 +79,7 @@ def clear_site_settings_cache_on_site_settings_updated(sender, **kwargs):
 def clear_site_settings_cache_on_site_updated(sender, **kwargs):
   instance = kwargs['instance']
   try:
-    cache_key = 'sitesettings:%d' % instance.id
+    cache_key = get_cache_key(instance.id)
     cache.delete(cache_key)
   except:
     pass
