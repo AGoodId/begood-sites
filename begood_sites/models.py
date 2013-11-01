@@ -37,7 +37,7 @@ class SiteSettings(models.Model):
   template_404 = models.ForeignKey(Template, verbose_name=_("404 template"),
       blank=True, null=True, related_name='+')
   language_code = models.CharField(_('language'), max_length=10,
-      choices=settings.LANGUAGES, default=settings.LANGUAGE_CODE)
+      choices=settings.LANGUAGES, default='sv')
 
   class Meta:
     verbose_name = _('site settings')
