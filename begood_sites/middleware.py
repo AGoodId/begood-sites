@@ -3,6 +3,7 @@ from django.contrib.sites.models import Site
 from django.core.cache import cache
 
 
+from models import SiteSettings
 from utils import make_tls_property
 
 
@@ -15,7 +16,8 @@ LANGUAGE_CODE.value = _default_language_code
 
 
 def generate_cache_key(domain):
-  return 'site:domain:%s' % domain
+  class_hash = hash(unicode(dir(Site)) + unicode(dir(SiteSettings)))
+  return 'site:domain:%s:%s' % (class_hash, domain)
 
 
 class DomainMiddleware(object):
@@ -43,4 +45,4 @@ class DomainMiddleware(object):
     # Set SITE_ID and LANGUAGE_CODE for this thread/request
     SITE_ID.value = site.id
     LANGUAGE_CODE.value = site.settings.language_code or _default_language_code
-    
+
