@@ -8,14 +8,16 @@ from django.contrib.sites.models import Site
 from django.utils.translation import ugettext as _
 
 
+import reversion
+from reversion.models import Revision, Version, post_revision_commit
 from begood.models import Template
 
 
-from fields import *
+from .fields import SingleSiteField
 
 
 class VersionSite(models.Model):
-  revision = models.ForeignKey('reversion.Revision', related_name="versionsites")
+  revision = models.ForeignKey(Revision, related_name="versionsites")
   site = SingleSiteField()
 
   objects = models.Manager()
@@ -82,3 +84,40 @@ def clear_site_settings_cache_on_site_updated(sender, **kwargs):
     cache.delete(cache_key)
   except:
     pass
+
+# Add site meta data to Reversion revisions
+def add_site_to_revision(sender, **kwargs):
+  instances = kwargs['instances']
+  revision = kwargs['revision']
+  versions = kwargs['versions']
+  sites = []
+
+  if revision.versionsites.exists():
+    # If the sites are already set earlier, don't reset them here
+    return
+
+  for ver in versions:
+    # Add any sites from the new version
+    if 'sites' in ver.field_dict:
+      sites.extend([int(s) for s in ver.field_dict['sites']])
+    elif 'site' in ver.field_dict:
+      sites.append(int(ver.field_dict['site']))
+    # Add any sites from the previous version, so we can see that it has
+    # moved
+    try:
+      available_versions = reversion.get_for_object_reference(ver.content_type.model_class(), ver.object_id)
+      prev_ver = available_versions.exclude(id=ver.id).order_by('-id')[0]
+      if 'sites' in prev_ver.field_dict:
+        sites.extend([int(s) for s in prev_ver.field_dict['sites']])
+      elif 'site' in prev_ver.field_dict:
+        sites.append(int(prev_ver.field_dict['site']))
+    except IndexError:
+      pass
+
+  for site_id in set(sites):
+    site = Site.objects.get(pk=site_id)
+    # Add meta data didn't work, so do it manually
+    vsite = VersionSite(revision=revision, site=site)
+    vsite.save()
+
+post_revision_commit.connect(add_site_to_revision, dispatch_uid="only_do_it_once")
