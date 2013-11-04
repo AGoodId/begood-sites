@@ -8,7 +8,6 @@ from django.contrib.sites.models import Site
 from django.utils.translation import ugettext as _
 
 
-from reversion.models import Revision
 from begood.models import Template
 
 
@@ -16,7 +15,7 @@ from fields import *
 
 
 class VersionSite(models.Model):
-  revision = models.ForeignKey(Revision, related_name="versionsites")
+  revision = models.ForeignKey('reversion.Revision', related_name="versionsites")
   site = SingleSiteField()
 
   objects = models.Manager()
