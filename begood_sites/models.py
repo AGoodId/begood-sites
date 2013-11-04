@@ -10,7 +10,6 @@ from django.utils.translation import ugettext as _
 
 import reversion
 from reversion.models import Revision, Version, post_revision_commit
-from begood.models import Template
 
 
 from .fields import SingleSiteField
@@ -33,9 +32,9 @@ class VersionSite(models.Model):
 class SiteSettings(models.Model):
   site = models.OneToOneField(Site, primary_key=True, related_name="settings")
   extra_html_head = models.TextField(_('Extra HTML-head'), blank=True)
-  template_search = models.ForeignKey(Template, verbose_name=_("search template"),
+  template_search = models.ForeignKey('begood.Template', verbose_name=_("search template"),
       blank=True, null=True, related_name='+')
-  template_404 = models.ForeignKey(Template, verbose_name=_("404 template"),
+  template_404 = models.ForeignKey('begood.Template', verbose_name=_("404 template"),
       blank=True, null=True, related_name='+')
   language_code = models.CharField(_('language'), max_length=10,
       choices=settings.LANGUAGES, default='sv')
