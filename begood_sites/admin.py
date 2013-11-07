@@ -83,6 +83,20 @@ class SiteSettingsInlineAdmin(admin.StackedInline):
   verbose_name_plural = _('site settings')
   can_delete = False
 
+  def get_formset(self, request, obj=None, **kwargs):
+    # Store a reference to the current site
+    self.obj = obj
+    return super(SiteSettingsInlineAdmin, self).get_formset(request, obj=obj, **kwargs)
+
+  def formfield_for_foreignkey(self, db_field, request=None, **kwargs):
+    if db_field.name == "template_search" or db_field.name == "template_404":
+      # Only show the templates from this site
+      if self.obj and self.obj.id:
+        kwargs["queryset"] = db_field.rel.to.objects.filter(sites__id=self.obj.id)
+      else:
+        kwargs["queryset"] = db_field.rel.to.objects.none()
+    return super(SiteSettingsInlineAdmin, self).formfield_for_foreignkey(db_field, request, **kwargs)
+
 
 class BeGoodSiteAdmin(SiteAdmin):
   """
