@@ -38,6 +38,8 @@ class SiteSettings(models.Model):
       blank=True, null=True, related_name='+')
   language_code = models.CharField(_('language'), max_length=10,
       choices=settings.LANGUAGES, default='sv')
+  basic_authentication_username = models.CharField(_('username'), max_length=255, blank=True)
+  basic_authentication_password = models.CharField(_('password'), max_length=255, blank=True)
 
   class Meta:
     verbose_name = _('site settings')
