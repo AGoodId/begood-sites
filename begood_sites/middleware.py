@@ -12,10 +12,13 @@ from utils import make_tls_property
 
 
 _default_site_id = getattr(settings, 'SITE_ID', None)
+_default_root_site_id = getattr(settings, 'ROOT_SITE_ID', None)
 _default_language_code = getattr(settings, 'LANGUAGE_CODE', None)
 SITE_ID = settings.__class__.SITE_ID = make_tls_property()
+ROOT_SITE_ID = settings.__class__.ROOT_SITE_ID = make_tls_property()
 LANGUAGE_CODE = settings.__class__.LANGUAGE_CODE = make_tls_property()
 SITE_ID.value = _default_site_id
+ROOT_SITE_ID.value = _default_root_site_id
 LANGUAGE_CODE.value = _default_language_code
 
 
@@ -48,6 +51,7 @@ class DomainMiddleware(object):
 
     # Set SITE_ID and LANGUAGE_CODE for this thread/request
     SITE_ID.value = site.id
+    ROOT_SITE_ID.value = site.settings.root_site_id
     LANGUAGE_CODE.value = site.settings.language_code or _default_language_code
 
 

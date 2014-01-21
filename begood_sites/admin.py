@@ -79,6 +79,7 @@ class SiteSettingsInlineAdmin(admin.StackedInline):
   Inline Admin class for site settings
   """
   model = SiteSettings
+  fk_name = 'site'
   verbose_name = _('site settings')
   verbose_name_plural = _('site settings')
   can_delete = False

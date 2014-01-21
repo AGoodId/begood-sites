@@ -31,6 +31,7 @@ class VersionSite(models.Model):
 
 class SiteSettings(models.Model):
   site = models.OneToOneField(Site, primary_key=True, related_name="settings")
+  root_site = models.ForeignKey(Site, default=1, related_name="children")
   extra_html_head = models.TextField(_('Extra HTML-head'), blank=True)
   template_search = models.ForeignKey('begood.Template', verbose_name=_("search template"),
       blank=True, null=True, related_name='+')
