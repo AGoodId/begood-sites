@@ -3,6 +3,7 @@ from django.db.models.signals import pre_save, pre_delete
 from django.dispatch import receiver
 from django.conf import settings
 from django.core.cache import cache
+from django.core.serializers import SerializerDoesNotExist
 from django.contrib.sites.managers import CurrentSiteManager
 from django.contrib.sites.models import Site
 from django.utils.translation import ugettext as _
@@ -113,7 +114,7 @@ def add_site_to_revision(sender, **kwargs):
         sites.extend([int(s) for s in prev_ver.field_dict['sites']])
       elif 'site' in prev_ver.field_dict:
         sites.append(int(prev_ver.field_dict['site']))
-    except IndexError:
+    except IndexError, SerializerDoesNotExist:
       pass
 
   for site_id in set(sites):
