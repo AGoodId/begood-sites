@@ -114,7 +114,7 @@ def add_site_to_revision(sender, **kwargs):
         sites.extend([int(s) for s in prev_ver.field_dict['sites']])
       elif 'site' in prev_ver.field_dict:
         sites.append(int(prev_ver.field_dict['site']))
-    except IndexError, SerializerDoesNotExist:
+    except (IndexError, SerializerDoesNotExist):
       pass
 
   for site_id in set(sites):
