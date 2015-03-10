@@ -117,7 +117,7 @@ def add_site_to_revision(sender, **kwargs):
     except (IndexError, SerializerDoesNotExist):
       pass
 
-  for site_id in set(sites):
+  for site_id in set(s.id for s in Site.objects.filter(id__in=sites)):
     site = Site.objects.get(pk=site_id)
     # Add meta data didn't work, so do it manually
     vsite = VersionSite(revision=revision, site=site)
