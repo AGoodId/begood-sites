@@ -3,7 +3,7 @@ from django.contrib.sites.models import Site
 from django.core.cache import cache
 from django.http import HttpResponse
 from django.utils.cache import patch_vary_headers
-from django.utils.translation import ugettext as _
+from django.utils.translation import ugettext_lazy as _
 from django.utils import translation
 
 
