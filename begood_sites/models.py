@@ -10,7 +10,7 @@ from django.utils.translation import ugettext_lazy as _
 
 
 import reversion
-from reversion.models import Revision, Version, post_revision_commit
+from reversion.models import Revision, post_revision_commit
 
 
 from .fields import SingleSiteField
@@ -27,18 +27,24 @@ class VersionSite(models.Model):
     unique_together = ("revision", "site")
 
   def __unicode__(self):
-    return unicode(self.revision) +"<->"+ unicode(self.site)
+    return unicode(self.revision) + "<->" + unicode(self.site)
 
 
 class SiteSettings(models.Model):
   site = models.OneToOneField(Site, primary_key=True, related_name="settings")
   root_site = models.ForeignKey(Site, default=1, related_name="children")
   extra_html_head = models.TextField(_('Extra HTML-head'), blank=True)
-  template_search = models.ForeignKey('begood.Template', verbose_name=_("search template"),
+  template_search = models.ForeignKey(
+      'begood.Template', verbose_name=_("search template"),
       blank=True, null=True, related_name='+')
-  template_404 = models.ForeignKey('begood.Template', verbose_name=_("404 template"),
+  template_404 = models.ForeignKey(
+      'begood.Template', verbose_name=_("404 template"),
       blank=True, null=True, related_name='+')
-  language_code = models.CharField(_('language'), max_length=10,
+  simple_input = models.ForeignKey(
+      'begood.Template', verbose_name=_("SimpleInput + User template"),
+      blank=True, null=True, related_name='+')
+  language_code = models.CharField(
+      _('language'), max_length=10,
       choices=settings.LANGUAGES, default='sv')
   basic_authentication_username = models.CharField(_('username'), max_length=255, blank=True)
   basic_authentication_password = models.CharField(_('password'), max_length=255, blank=True)
@@ -62,11 +68,12 @@ def get_settings_property(site):
     settings = cache.get(cache_key)
     if settings is None:
       settings = SiteSettings.objects.get_or_create(site=site)[0]
-      cache.set(cache_key, settings, 24*60*60)
+      cache.set(cache_key, settings, 24 * 60 * 60)
     return settings
   else:
     return None
 Site.settings = property(get_settings_property)
+
 
 @receiver(pre_delete, sender=SiteSettings, dispatch_uid='site_settings_signals')
 @receiver(pre_save, sender=SiteSettings, dispatch_uid='site_settings_signals')
@@ -78,6 +85,7 @@ def clear_site_settings_cache_on_site_settings_updated(sender, **kwargs):
   except:
     pass
 
+
 @receiver(pre_delete, sender=Site, dispatch_uid='site_settings_signals')
 @receiver(pre_save, sender=Site, dispatch_uid='site_settings_signals')
 def clear_site_settings_cache_on_site_updated(sender, **kwargs):
@@ -88,9 +96,9 @@ def clear_site_settings_cache_on_site_updated(sender, **kwargs):
   except:
     pass
 
+
 # Add site meta data to Reversion revisions
 def add_site_to_revision(sender, **kwargs):
-  instances = kwargs['instances']
   revision = kwargs['revision']
   versions = kwargs['versions']
   sites = []
