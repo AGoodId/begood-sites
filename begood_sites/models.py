@@ -1,3 +1,5 @@
+import os
+
 from django.db import models
 from django.db.models.signals import pre_save, pre_delete
 from django.dispatch import receiver
@@ -14,6 +16,10 @@ from reversion.models import Revision, post_revision_commit
 
 
 from .fields import SingleSiteField
+
+
+STYLE_PATH = os.path.join(settings.PROJECT_PATH, 'static/less')
+print STYLE_PATH
 
 
 class VersionSite(models.Model):
@@ -34,6 +40,7 @@ class SiteSettings(models.Model):
   site = models.OneToOneField(Site, primary_key=True, related_name="settings")
   root_site = models.ForeignKey(Site, default=1, related_name="children")
   extra_html_head = models.TextField(_('Extra HTML-head'), blank=True)
+  stylesheet = models.FilePathField(_('Stylesheet to use'), path=STYLE_PATH, match='theme.*?', blank=True)
   template_search = models.ForeignKey(
       'begood.Template', verbose_name=_("search template"),
       blank=True, null=True, related_name='+')
