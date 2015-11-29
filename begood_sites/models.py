@@ -8,7 +8,7 @@ from django.core.cache import cache
 from django.core.serializers import SerializerDoesNotExist
 from django.contrib.sites.managers import CurrentSiteManager
 from django.contrib.sites.models import Site
-from django.utils.translation import ugettext as _
+from django.utils.translation import ugettext_lazy as _
 
 
 import reversion
