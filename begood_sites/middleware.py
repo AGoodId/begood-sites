@@ -62,7 +62,7 @@ class BasicAuthenticationMiddleware(object):
     if realm is None:
       realm = getattr(settings, 'WWW_AUTHENTICATION_REALM', _('Restricted Access'))
     # TODO: Make a nice template for a 401 message?
-    response =  HttpResponse(_('Authorization Required'), mimetype="text/plain")
+    response =  HttpResponse(_('Authorization Required'), content_type="text/plain")
     response['WWW-Authenticate'] = 'Basic realm="%s"' % (realm)
     response.status_code = 401
     return response
