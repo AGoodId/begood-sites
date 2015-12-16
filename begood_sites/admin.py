@@ -29,7 +29,11 @@ class SiteModelAdmin(admin.ModelAdmin):
     """
     Returns a Site filtered queryset for use in the Django admin change list
     """
-    return self.model.on_site.get_query_set()
+    obj = self.model.on_site
+    try:
+      return obj.get_query_set()
+    except AttributeError:
+      return obj.get_queryset()
 
   def get_form(self, request, obj=None, **kwargs):
     # Need to store the object to use in formfield_for_dbfield
