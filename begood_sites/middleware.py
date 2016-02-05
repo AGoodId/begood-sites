@@ -31,7 +31,10 @@ class DomainMiddleware(object):
   """Sets settings.SITE_ID based on request's domain"""
   def process_request(self, request):
     # Remove port number, if its given
-    domain = request.get_host()
+    try:
+      domain = request.get_host()
+    except UnicodeError:
+      domain = request.META['HTTP_HOST'].decode('utf-8')
     if ':' in domain:
       domain = domain.split(':')[0]
     # Domains are case insensitive
@@ -62,7 +65,7 @@ class BasicAuthenticationMiddleware(object):
     if realm is None:
       realm = getattr(settings, 'WWW_AUTHENTICATION_REALM', _('Restricted Access'))
     # TODO: Make a nice template for a 401 message?
-    response =  HttpResponse(_('Authorization Required'), content_type="text/plain")
+    response =  HttpResponse(_('Authorization Required'), mimetype="text/plain")
     response['WWW-Authenticate'] = 'Basic realm="%s"' % (realm)
     response.status_code = 401
     return response
