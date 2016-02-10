@@ -18,6 +18,13 @@ from reversion.models import Revision, post_revision_commit
 from .fields import SingleSiteField
 
 
+IMAGE_QUALITY_CHOICES = [
+    (65, _('Low (fastest)')),
+    (75, _('Normal')),
+    (90, _('Very high (slowest)')),
+]
+
+
 STYLE_PATH = os.path.join(settings.PROJECT_PATH, 'static/less')
 print STYLE_PATH
 
@@ -53,6 +60,7 @@ class SiteSettings(models.Model):
   language_code = models.CharField(
       _('language'), max_length=10,
       choices=settings.LANGUAGES, default='sv')
+  image_quality = models.IntegerField(_('image quality'), choices=IMAGE_QUALITY_CHOICES, blank=True, null=True)
   basic_authentication_username = models.CharField(_('username'), max_length=255, blank=True)
   basic_authentication_password = models.CharField(_('password'), max_length=255, blank=True)
 
