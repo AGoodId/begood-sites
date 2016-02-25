@@ -9,8 +9,9 @@ class Migration(SchemaMigration):
 
     def forwards(self, orm):
         # Adding field 'SiteSettings.root_site'
+        id = orm['sites.Site'].objects.all()[0].id  # use the first site as default instead of 1, because 1 might be deleted
         db.add_column(u'begood_sites_sitesettings', 'root_site',
-                      self.gf('django.db.models.fields.related.ForeignKey')(default=1, related_name='children', to=orm['sites.Site']),
+                      self.gf('django.db.models.fields.related.ForeignKey')(default=id, related_name='children', to=orm['sites.Site']),
                       keep_default=False)
 
 
