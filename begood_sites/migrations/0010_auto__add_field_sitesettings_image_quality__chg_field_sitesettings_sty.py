@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-import datetime
+from south.utils import datetime_utils as datetime
 from south.db import db
 from south.v2 import SchemaMigration
 from django.db import models
@@ -8,32 +8,37 @@ from django.db import models
 class Migration(SchemaMigration):
 
     def forwards(self, orm):
-        # Adding field 'SiteSettings.root_site'
-        id = orm['sites.Site'].objects.all()[0].id  # use the first site as default instead of 1, because 1 might be deleted
-        db.add_column(u'begood_sites_sitesettings', 'root_site',
-                      self.gf('django.db.models.fields.related.ForeignKey')(default=id, related_name='children', to=orm['sites.Site']),
+        # Adding field 'SiteSettings.image_quality'
+        db.add_column(u'begood_sites_sitesettings', 'image_quality',
+                      self.gf('django.db.models.fields.IntegerField')(null=True, blank=True),
                       keep_default=False)
 
 
-    def backwards(self, orm):
-        # Deleting field 'SiteSettings.root_site'
-        db.delete_column(u'begood_sites_sitesettings', 'root_site_id')
+        # Changing field 'SiteSettings.stylesheet'
+        db.alter_column(u'begood_sites_sitesettings', 'stylesheet', self.gf('django.db.models.fields.FilePathField')(path='/Users/andreas/repositories/agoodid/sommarnojen-remake/xcalibur/static/less', max_length=100, match='theme.*?'))
 
+    def backwards(self, orm):
+        # Deleting field 'SiteSettings.image_quality'
+        db.delete_column(u'begood_sites_sitesettings', 'image_quality')
+
+
+        # Changing field 'SiteSettings.stylesheet'
+        db.alter_column(u'begood_sites_sitesettings', 'stylesheet', self.gf('django.db.models.fields.FilePathField')(path=('/Users/andreas/.virtualenvs/showroom2/src/begood-sites/begood_sites/static/less',), max_length=100))
 
     models = {
         u'auth.group': {
             'Meta': {'object_name': 'Group'},
             u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'level': ('django.db.models.fields.PositiveIntegerField', [], {'db_index': 'True'}),
-            'lft': ('django.db.models.fields.PositiveIntegerField', [], {'db_index': 'True'}),
+            u'level': ('django.db.models.fields.PositiveIntegerField', [], {'db_index': 'True'}),
+            u'lft': ('django.db.models.fields.PositiveIntegerField', [], {'db_index': 'True'}),
             'live_update': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
             'name': ('django.db.models.fields.CharField', [], {'unique': 'True', 'max_length': '80'}),
             'parent': ('django.db.models.fields.related.ForeignKey', [], {'blank': 'True', 'related_name': "'children'", 'null': 'True', 'to': u"orm['auth.Group']"}),
             'permissions': ('django.db.models.fields.related.ManyToManyField', [], {'to': u"orm['auth.Permission']", 'symmetrical': 'False', 'blank': 'True'}),
-            'rght': ('django.db.models.fields.PositiveIntegerField', [], {'db_index': 'True'}),
+            u'rght': ('django.db.models.fields.PositiveIntegerField', [], {'db_index': 'True'}),
             'segment': ('django.db.models.fields.TextField', [], {'blank': 'True'}),
             'sites': ('begood_sites.fields.MultiSiteField', [], {'symmetrical': 'False', 'to': u"orm['sites.Site']", 'null': 'True', 'blank': 'True'}),
-            'tree_id': ('django.db.models.fields.PositiveIntegerField', [], {'db_index': 'True'})
+            u'tree_id': ('django.db.models.fields.PositiveIntegerField', [], {'db_index': 'True'})
         },
         u'auth.permission': {
             'Meta': {'ordering': "(u'content_type__app_label', u'content_type__model', u'codename')", 'unique_together': "((u'content_type', u'codename'),)", 'object_name': 'Permission'},
@@ -73,9 +78,12 @@ class Migration(SchemaMigration):
             'basic_authentication_password': ('django.db.models.fields.CharField', [], {'max_length': '255', 'blank': 'True'}),
             'basic_authentication_username': ('django.db.models.fields.CharField', [], {'max_length': '255', 'blank': 'True'}),
             'extra_html_head': ('django.db.models.fields.TextField', [], {'blank': 'True'}),
+            'image_quality': ('django.db.models.fields.IntegerField', [], {'null': 'True', 'blank': 'True'}),
             'language_code': ('django.db.models.fields.CharField', [], {'default': "'sv'", 'max_length': '10'}),
             'root_site': ('django.db.models.fields.related.ForeignKey', [], {'default': '1', 'related_name': "'children'", 'to': u"orm['sites.Site']"}),
+            'simple_input': ('django.db.models.fields.related.ForeignKey', [], {'blank': 'True', 'related_name': "'+'", 'null': 'True', 'to': u"orm['begood.Template']"}),
             'site': ('django.db.models.fields.related.OneToOneField', [], {'related_name': "'settings'", 'unique': 'True', 'primary_key': 'True', 'to': u"orm['sites.Site']"}),
+            'stylesheet': ('django.db.models.fields.FilePathField', [], {'path': "'/Users/andreas/repositories/agoodid/sommarnojen-remake/xcalibur/static/less'", 'max_length': '100', 'match': "'theme.*?'", 'blank': 'True'}),
             'template_404': ('django.db.models.fields.related.ForeignKey', [], {'blank': 'True', 'related_name': "'+'", 'null': 'True', 'to': u"orm['begood.Template']"}),
             'template_search': ('django.db.models.fields.related.ForeignKey', [], {'blank': 'True', 'related_name': "'+'", 'null': 'True', 'to': u"orm['begood.Template']"})
         },
@@ -97,7 +105,7 @@ class Migration(SchemaMigration):
             'comment': ('django.db.models.fields.TextField', [], {'blank': 'True'}),
             'date_created': ('django.db.models.fields.DateTimeField', [], {'auto_now_add': 'True', 'blank': 'True'}),
             u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'manager_slug': ('django.db.models.fields.CharField', [], {'default': "'default'", 'max_length': '200', 'db_index': 'True'}),
+            'manager_slug': ('django.db.models.fields.CharField', [], {'default': "u'default'", 'max_length': '200', 'db_index': 'True'}),
             'user': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['auth.User']", 'null': 'True', 'blank': 'True'})
         },
         u'sites.site': {
