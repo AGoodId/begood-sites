@@ -26,7 +26,6 @@ IMAGE_QUALITY_CHOICES = [
 
 
 STYLE_PATH = os.path.join(settings.PROJECT_PATH, 'static/less')
-print STYLE_PATH
 
 
 class VersionSite(models.Model):
