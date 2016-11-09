@@ -10,7 +10,6 @@ import begood_sites.fields
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('begood', '0005_auto_20161109_1140'),
         ('sites', '0001_initial'),
         ('reversion', '0001_squashed_0004_auto_20160611_1202'),
     ]
