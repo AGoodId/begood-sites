@@ -12,7 +12,12 @@ from django.utils.translation import ugettext_lazy as _
 
 
 import reversion
-from reversion.models import Revision, post_revision_commit
+from reversion.models import Revision
+
+try:
+  from reversion.models import post_revision_commit
+except ImportError:
+  from reversion.signals import post_revision_commit
 
 
 from .fields import SingleSiteField
