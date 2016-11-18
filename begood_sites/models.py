@@ -12,12 +12,17 @@ from django.utils.translation import ugettext_lazy as _
 
 
 import reversion
-from reversion.models import Revision
+from reversion.models import Revision, Version
 
 try:
   from reversion.models import post_revision_commit
 except ImportError:
   from reversion.signals import post_revision_commit
+
+try:
+  get_for_object_reference = reversion.get_for_object_reference
+except:
+  get_for_object_reference = Version.objects.get_for_object_reference
 
 
 from .fields import SingleSiteField
@@ -135,7 +140,7 @@ def add_site_to_revision(sender, **kwargs):
     # Add any sites from the previous version, so we can see that it has
     # moved
     try:
-      available_versions = reversion.get_for_object_reference(ver.content_type.model_class(), ver.object_id)
+      available_versions = get_for_object_reference(ver.content_type.model_class(), ver.object_id)
       prev_ver = available_versions.exclude(id=ver.id).order_by('-id')[0]
       if 'sites' in prev_ver.field_dict:
         sites.extend([int(s) for s in prev_ver.field_dict['sites']])
