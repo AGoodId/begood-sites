@@ -1,3 +1,35 @@
+from django.db import models
+from django.contrib.sites.models import Site
+
+
+class MultiSiteField(models.ManyToManyField):
+
+  def __init__(self, **kwargs):
+    defaults = {
+        'blank': False,
+        }
+    defaults.update(kwargs)
+    if 'to' in defaults:
+      del defaults['to']
+    super(MultiSiteField, self).__init__(Site, **defaults)
+
+
+class SingleSiteField(models.ForeignKey):
+
+  def __init__(self, **kwargs):
+    if 'to' in kwargs:
+      del kwargs['to']
+    super(SingleSiteField, self).__init__(Site, **kwargs)
+
+
+# Make sure South migrations work
+try:
+  from south.modelsinspector import add_introspection_rules
+  add_introspection_rules([], ["^begood_sites\.fields\.MultiSiteField"])
+  add_introspection_rules([], ["^begood_sites\.fields\.SingleSiteField"])
+except:
+  pass
+
 class RadioChoiceField(Field):
     widget = RadioSelect
     default_error_messages = {
@@ -51,4 +83,4 @@ class RadioChoiceField(Field):
             else:
                 if value == smart_text(k):
                     return True
-        return False
+        return Fal
