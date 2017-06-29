@@ -1,8 +1,15 @@
 from django.db import models
 from django.contrib.sites.models import Site
-
+from django.forms.fields import *
+from django.core import validators
+from django.core.exceptions import ValidationError
+from django.forms.widgets import *
+from django.utils.encoding import smart_text, force_text
+import copy
+from django.utils.translation import ugettext_lazy as _
 
 class MultiSiteField(models.ManyToManyField):
+
 
   def __init__(self, **kwargs):
     defaults = {
@@ -83,4 +90,4 @@ class RadioChoiceField(Field):
             else:
                 if value == smart_text(k):
                     return True
-        return Fal
+        return False
